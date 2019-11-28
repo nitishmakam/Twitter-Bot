@@ -5,6 +5,31 @@ import os
 
 driver = webdriver.Chrome()
 
+class SeleniumActions:
+	
+	elem = None
+
+	def act_btn(self, css_selector=None, xpath=None, link_text=None, tag_name=None, action=None, field=None):
+		if css_selector:
+			self.elem = driver.find_element_by_css_selector(css_selector)
+		elif xpath:
+			self.elem = driver.find_element_by_xpath(xpath)
+		elif link_text:	
+			self.elem = driver.find_element_by_link_text(link_text)
+		elif tag_name:	
+			self.elem = driver.find_element_by_tag_name(tag_name)
+		
+		self.do_action(action, field)		
+	
+	def do_action(self, act_type, field):
+		if act_type == 'click':
+			self.elem.click()
+		elif act_type == 'fill':
+			self.elem.send_keys(field)	
+
+#Global var
+sel = SeleniumActions()
+
 class Twitter:
 	domain_name = "https://twitter.com"
 
@@ -13,7 +38,7 @@ class Twitter:
 
 	username = ''
 	password = ''
-
+	
 	def config_init(self, cfg_fname):
 		curr_dir = os.getcwd()
 		cfg_fpath = os.path.join(curr_dir,cfg_fname)
@@ -40,8 +65,7 @@ class Twitter:
 					k=3
 					path = "/html/body/div/div/div/div/main/div/div/div/div/div/div[2]/div/div/div[2]/section/div/div/div/div[{pos}]/div/article/div/div[2]/div[2]/div[{sec}]/div[3]/div/div/div[1]".format(pos=i,sec=k)
 					print("1-"+path)
-					like1=driver.find_element_by_xpath(path)
-					like1.click()
+					sel.act_btn(xpath = path, action='click')
 					time.sleep(2)
 					print("Trying first - "+(j*10+i))
 				except Exception:
@@ -52,8 +76,7 @@ class Twitter:
 						k=4
 						path="/html/body/div/div/div/div/main/div/div/div/div/div/div[2]/div/div/div[2]/section/div/div/div/div[{pos}]/div/article/div/div[2]/div[2]/div[{sec}]/div[3]/div/div/div[1]".format(pos=i,sec=k)
 						print("2-"+path)
-						like2=driver.find_element_by_xpath(path)
-						like2.click()
+						sel.act_btn(xpath = path, action='click')
 						print("Trying second - " +(j*10+i))
 						time.sleep(2)
 					except Exception:
@@ -62,17 +85,18 @@ class Twitter:
 
 	def login_app(self,username,password):				
 		driver.get(self.domain_name)
-		login = driver.find_element_by_link_text("Log In")
-		login.click()
+		sel.act_btn(link_text="Log In", action='click')
 
-		usernameField=element=driver.find_element_by_css_selector("div#page-container > div > div > form > fieldset > div > input")
-		usernameField.send_keys(username)
+		username_css =  "div#page-container > div > div > form > fieldset > div > input"
+		sel.act_btn(css_selector = username_css, action='fill', field=username)
+		#usernameField=element=driver.find_element_by_css_selector("div#page-container > div > div > form > fieldset > div > input")
+		#usernameField.send_keys(username)	
+		pw_css =  "div#page-container > div > div > form > fieldset > div:nth-of-type(2) > input"
+		sel.act_btn(css_selector = pw_css, action='fill', field=password)
+		#passwordField=driver.find_element_by_css_selector("div#page-container > div > div > form > fieldset > div:nth-of-type(2) > input")
+		#passwordField.send_keys(password)
 
-		passwordField=driver.find_element_by_css_selector("div#page-container > div > div > form > fieldset > div:nth-of-type(2) > input")
-		passwordField.send_keys(password)
-
-		login=driver.find_element_by_tag_name("button")
-		login.click()
+		sel.act_btn(tag_name = "button", action='click')
 
 	def execute(self):
 		
