@@ -10,4 +10,4 @@ Install selenium and chrome webdriver. Move chrome web driver to one of your PAT
 Specify your username and password in the respective fields and run python3 unlike_tweets.py
 
 #### How to Use
-Specify your username and password in the config.yaml file and run with python3 unlike_tweets.py
+Specify your username and password in the config.ini file and run with python3 unlike_tweets.py
